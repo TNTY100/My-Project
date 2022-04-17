@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class BoxBoiBehaviour : MonoBehaviour
 {
 
-    BehaviourTree tree;
+    BehaviourTree mouvementTree;
    
 
     GameObject player;
@@ -40,7 +40,7 @@ public class BoxBoiBehaviour : MonoBehaviour
         backRoom = GameObject.FindGameObjectWithTag("BackRoom");
         spawners = GameObject.FindGameObjectsWithTag("Spawners");
 
-        tree = new BehaviourTree();
+        mouvementTree = new BehaviourTree();
 
         Branch inBranch = new Branch("Initial Branch"); 
 
@@ -60,12 +60,12 @@ public class BoxBoiBehaviour : MonoBehaviour
         inBranch.AddChild(isActive);
         inBranch.AddChild(chassePlayer);
 
-        tree.AddChild(inBranch);
+        mouvementTree.AddChild(inBranch);
 
 
 
 
-        tree.PrintTree();
+        mouvementTree.PrintTree();
 
     }
 
@@ -166,6 +166,6 @@ public class BoxBoiBehaviour : MonoBehaviour
             return;
         }
         if (treeStatus != Node.Status.SUCCESS)
-            treeStatus = tree.Process();
+            treeStatus = mouvementTree.Process();
     }
 }
