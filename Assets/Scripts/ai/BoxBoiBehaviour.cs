@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
+/// <summary>
+/// Testing the gitHub thing
+/// </summary>
+
 public class BoxBoiBehaviour : MonoBehaviour
 {
 
