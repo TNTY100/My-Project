@@ -43,31 +43,17 @@ public class BoxBoiBehaviour : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         backRoom = GameObject.FindGameObjectWithTag("BackRoom");
         spawners = GameObject.FindGameObjectsWithTag("Spawners");
-
-        mouvementTree = new BehaviourTree();
-
-        Branch inBranch = new Branch("Initial Branch"); 
-
-        Leaf isActive = new Leaf("Is Agent Alive", IsAlive);
-        Sequence chassePlayer = new Sequence("Chases player");
-
-        Leaf goToPlayer = new Leaf("Go To player", GoToPlayer);
-        Leaf circlePlayer = new Leaf("Circleing player", CirclePlayer);
-
         
+        mouvementTree = new BehaviourTree();
+        Selector first_node = new Selector("First Node");
 
-        //tree.AddChild(steal);
+        Leaf circlePlayer = new Leaf("Circleing player", CirclePlayer);
+        Leaf goToPlayer = new Leaf("Go To player", GoToPlayer);
+        //Leaf circlePlayer = new Leaf("Circleing player", CirclePlayer);
 
-        chassePlayer.AddChild(goToPlayer);
-        chassePlayer.AddChild(circlePlayer);
-
-        inBranch.AddChild(isActive);
-        inBranch.AddChild(chassePlayer);
-
-        mouvementTree.AddChild(inBranch);
-
-
-
+        first_node.AddChild(goToPlayer);
+        first_node.AddChild(circlePlayer);
+        mouvementTree.AddChild(first_node);
 
         mouvementTree.PrintTree();
 
@@ -77,36 +63,42 @@ public class BoxBoiBehaviour : MonoBehaviour
     {
         return GoToLocation(player.transform.position, 4);
     }
-
+    private Vector3 circle_point;
 
     public Node.Status CirclePlayer()
     {
+
         Debug.Log("Want to Circle player");
-        int offset = 5;
-        Vector3 pointOffset = Vector3.forward * Random.Range(-offset, offset) + Vector3.left * Random.Range(-offset, offset);
-        Vector3 goalPoint = player.transform.position + pointOffset;
 
-        Node.Status status = GoToLocation(goalPoint, 1);
+        if (state == ActionState.IDLE)
+        {
+            RaycastHit hit;
+            int layerMask = 1 << 8;
+            float distance = 1.5f;
 
+            int randomX = Random.Range(-1, 1);
+            int randomZ = Random.Range(-1, 1);
+            Debug.Log("RandomX:" + randomX.ToString() + "; RandomZ:" + randomZ.ToString());
+            Vector3 vector = new Vector3(randomX, 0, randomZ);
+
+            Ray ray = new Ray(player.transform.position, player.transform.position + vector);
+
+            circle_point = ray.origin + (ray.direction * distance);
+            Debug.Log("World point " + circle_point);
+            // Debug.DrawLine(Camera.main.transform.position, point, Color.red);
+            /*
+            Vector3 wantedPosition = Physics.Raycast(player.transform.position, transform.TransformDirection(Vector3.forward), out hit, 100, layerMask);
+
+            Debug.Log("Want to Circle player");
+            int offset = 5;
+            Vector3 pointOffset = Vector3.forward * Random.Range(-offset, offset) + Vector3.left * Random.Range(-offset, offset);
+            Vector3 goalPoint = player.transform.position + pointOffset;
+            */
+            
+        }
+
+        Node.Status status = GoToLocation(circle_point, 1);
         return status;
-    }
-    public Node.Status IsAlive()
-    {
-        
-        if(pv > 0)
-        {
-            livingState = LivingState.LIVING;
-            return Node.Status.SUCCESS;
-        }
-
-        if (livingState == LivingState.LIVING) 
-        {
-            agent.ResetPath();
-            agent.Warp(backRoom.transform.position);
-            livingState = LivingState.DEAD;
-            respawnMoment = Time.time + respawnTime;
-        }
-        return Node.Status.FAILURE;
     }
 
 
