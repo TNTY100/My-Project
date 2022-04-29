@@ -12,7 +12,8 @@ public class BoxBoiBehaviour : MonoBehaviour
 {
 
     BehaviourTree mouvementTree;
-   
+
+    public int player_go_to_location_precision = 4;
 
     GameObject player;
     NavMeshAgent agent;
@@ -22,13 +23,12 @@ public class BoxBoiBehaviour : MonoBehaviour
     public enum ActionState { IDLE, WORKING };
     ActionState state = ActionState.IDLE;
 
-    public enum LivingState { LIVING, DEAD };
-    LivingState livingState = LivingState.LIVING;
+    public enum ProximityState { FAR, NEAR, DEAD, UNKNOWN};
+    ProximityState proximity_state = ProximityState.NEAR;
+
+
     public float respawnTime = 25f;
     private float respawnMoment = 25f;
-
-
-    Node.Status treeStatus = Node.Status.RUNNING;
 
     public Animator animator;
 
@@ -43,29 +43,24 @@ public class BoxBoiBehaviour : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         backRoom = GameObject.FindGameObjectWithTag("BackRoom");
         spawners = GameObject.FindGameObjectsWithTag("Spawners");
-        
-        mouvementTree = new BehaviourTree();
-        Selector first_node = new Selector("First Node");
-
-        Leaf circlePlayer = new Leaf("Circleing player", CirclePlayer);
-        Leaf goToPlayer = new Leaf("Go To player", GoToPlayer);
-        //Leaf circlePlayer = new Leaf("Circleing player", CirclePlayer);
-
-        first_node.AddChild(goToPlayer);
-        first_node.AddChild(circlePlayer);
-        mouvementTree.AddChild(first_node);
-
-        mouvementTree.PrintTree();
 
     }
 
-    public Node.Status GoToPlayer()
+    public ProximityState GoToPlayer()
     {
-        return GoToLocation(player.transform.position, 4);
+        Vector3 playerPosition = player.transform.position;
+
+        if (Vector3.Distance(playerPosition, this.transform.position) <= player_go_to_location_precision + 1)
+        {
+            Debug.Log("gotoplayerSucces");
+            return ProximityState.NEAR;
+        }
+
+        return GoToLocation(player.transform.position, player_go_to_location_precision, "Going To Player");
     }
     private Vector3 circle_point;
 
-    public Node.Status CirclePlayer()
+    public ProximityState CirclePlayer()
     {
 
         Debug.Log("Want to Circle player");
@@ -76,14 +71,15 @@ public class BoxBoiBehaviour : MonoBehaviour
             int layerMask = 1 << 8;
             float distance = 1.5f;
 
-            int randomX = Random.Range(-1, 1);
-            int randomZ = Random.Range(-1, 1);
+            float randomX = Random.Range(-1, 1);
+            float randomZ = Random.Range(-1, 1);
             Debug.Log("RandomX:" + randomX.ToString() + "; RandomZ:" + randomZ.ToString());
             Vector3 vector = new Vector3(randomX, 0, randomZ);
 
             Ray ray = new Ray(player.transform.position, player.transform.position + vector);
 
             circle_point = ray.origin + (ray.direction * distance);
+            Debug.Log("World point " + player.transform.position);
             Debug.Log("World point " + circle_point);
             // Debug.DrawLine(Camera.main.transform.position, point, Color.red);
             /*
@@ -97,37 +93,52 @@ public class BoxBoiBehaviour : MonoBehaviour
             
         }
 
-        Node.Status status = GoToLocation(circle_point, 1);
+        ProximityState status = GoToLocation(circle_point, 2, "Circling");
+        /*
+        if (status == Node.Status.SUCCESS)
+        {
+            Debug.Log("Player circled Successfully");
+        }
+        else if (status == Node.Status.FAILURE)
+        {
+            Debug.Log("Player circled Faill");
+        }
+        else
+        {
+            Debug.Log("Player is Circleing");
+        }
+        */
         return status;
     }
 
 
-    public Node.Status GoToLocation(Vector3 destination, int precision)
+    public ProximityState GoToLocation(Vector3 destination, int precision, string destinationName = "")
     {
         float distanceToTarget = Vector3.Distance(destination, this.transform.position);
         //Debug.Log("Distance To Target: " + distanceToTarget.ToString() + " ; Distance path End position: " + Vector3.Distance(agent.pathEndPosition, destination).ToString());
 
         if (state == ActionState.IDLE || Vector3.Distance(agent.pathEndPosition, destination) >= 2)
         {
-            Debug.Log("Looking for location");
+            Debug.Log("Looking for " + destinationName);
             agent.SetDestination(destination);
             state = ActionState.WORKING;
 
             if (Vector3.Distance(agent.pathEndPosition, destination) >= 2)
             {
-                Debug.Log("No path");
-                return Node.Status.FAILURE;
+                Debug.Log("No path" + destinationName);
+                state = ActionState.IDLE;
+                return ProximityState.UNKNOWN;
                 
             }
 
         }
         else if (distanceToTarget < precision)
         {
-            Debug.Log("Location Success");
+            Debug.Log("Location Success" + destinationName);
             state = ActionState.IDLE;
-            return Node.Status.SUCCESS;
+            proximity_state = ProximityState.NEAR;
         }
-        return Node.Status.RUNNING;
+        return ProximityState.FAR;
     }
 
     public void AnimatorController() 
@@ -147,7 +158,7 @@ public class BoxBoiBehaviour : MonoBehaviour
             Debug.Log("Respawned");
             pv = maxPv;
             agent.Warp(spawners[Random.Range(0, spawners.Length)].transform.position);
-            livingState = LivingState.LIVING;
+            proximity_state = ProximityState.FAR;
         }
     }
 
@@ -156,12 +167,18 @@ public class BoxBoiBehaviour : MonoBehaviour
     void Update()
     {
         AnimatorController();
-        if (livingState == LivingState.DEAD)
+        if (proximity_state == ProximityState.DEAD)
         {
             RespawnCountdown();
             return;
         }
-        if (treeStatus != Node.Status.SUCCESS)
-            treeStatus = mouvementTree.Process();
+
+        ProximityState try_going_to_player = GoToPlayer();
+
+        if (try_going_to_player == ProximityState.NEAR)
+        {
+            CirclePlayer();
+        }
+
     }
 }
