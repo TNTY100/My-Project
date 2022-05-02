@@ -4,29 +4,39 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
-/// <summary>
-/// Testing the gitHub thing
-/// </summary>
-
 public class BoxBoiBehaviour : MonoBehaviour
 {
 
     BehaviourTree mouvementTree;
 
-    public int player_go_to_location_precision = 4;
 
+    public int player_go_to_location_precision = 6;
+
+    // attack
+    public int attackRange = 8;
+    public LayerMask what_is_player;
+    private bool alreadyAttacked = false;
+    private float timeBetweenAttacks = 0.5f;
+    public GameObject projectile;
+    private bool player_in_attack_range;
+
+    // GameObjects
     GameObject player;
     NavMeshAgent agent;
     GameObject[] spawners;
 
+
+    // Mouvement
     public GameObject backRoom;
     public enum ActionState { IDLE, WORKING };
     ActionState state = ActionState.IDLE;
 
-    public enum ProximityState { FAR, NEAR, DEAD, UNKNOWN};
-    ProximityState proximity_state = ProximityState.NEAR;
+    public enum ProximityState { FAR, NEAR, DEAD, UNKNOWN };
+    ProximityState proximity_state = ProximityState.FAR;
 
+    private bool is_cicling = false;
 
+    // Dead
     public float respawnTime = 25f;
     private float respawnMoment = 25f;
 
@@ -65,49 +75,34 @@ public class BoxBoiBehaviour : MonoBehaviour
 
         Debug.Log("Want to Circle player");
 
-        if (state == ActionState.IDLE)
+        if (is_cicling)
         {
+            is_cicling = true;
             RaycastHit hit;
             int layerMask = 1 << 8;
             float distance = 1.5f;
-
+            int distance_multiplyer = 4;
             float randomX = Random.Range(-1, 1);
             float randomZ = Random.Range(-1, 1);
             Debug.Log("RandomX:" + randomX.ToString() + "; RandomZ:" + randomZ.ToString());
-            Vector3 vector = new Vector3(randomX, 0, randomZ);
+            Vector3 vector = new Vector3(randomX * distance_multiplyer, 0, randomZ * distance_multiplyer);
 
             Ray ray = new Ray(player.transform.position, player.transform.position + vector);
 
             circle_point = ray.origin + (ray.direction * distance);
             Debug.Log("World point " + player.transform.position);
             Debug.Log("World point " + circle_point);
-            // Debug.DrawLine(Camera.main.transform.position, point, Color.red);
-            /*
-            Vector3 wantedPosition = Physics.Raycast(player.transform.position, transform.TransformDirection(Vector3.forward), out hit, 100, layerMask);
-
-            Debug.Log("Want to Circle player");
-            int offset = 5;
-            Vector3 pointOffset = Vector3.forward * Random.Range(-offset, offset) + Vector3.left * Random.Range(-offset, offset);
-            Vector3 goalPoint = player.transform.position + pointOffset;
-            */
+            Debug.DrawLine(player.transform.position, circle_point, Color.red);
             
         }
 
-        ProximityState status = GoToLocation(circle_point, 2, "Circling");
-        /*
-        if (status == Node.Status.SUCCESS)
+        ProximityState status = GoToLocation(circle_point, 1, "Circling");
+
+        if (status == ProximityState.NEAR)
         {
-            Debug.Log("Player circled Successfully");
+            is_cicling = false;
         }
-        else if (status == Node.Status.FAILURE)
-        {
-            Debug.Log("Player circled Faill");
-        }
-        else
-        {
-            Debug.Log("Player is Circleing");
-        }
-        */
+
         return status;
     }
 
@@ -173,6 +168,11 @@ public class BoxBoiBehaviour : MonoBehaviour
             return;
         }
 
+        // attack
+        player_in_attack_range = Physics.CheckSphere(transform.position, attackRange, what_is_player);
+
+        if (player_in_attack_range) AttackPlayer();
+
         ProximityState try_going_to_player = GoToPlayer();
 
         if (try_going_to_player == ProximityState.NEAR)
@@ -180,5 +180,29 @@ public class BoxBoiBehaviour : MonoBehaviour
             CirclePlayer();
         }
 
+    }
+
+    private void AttackPlayer()
+    {
+
+        // problem with looking at the player
+        // https://youtu.be/UjkSFoLxesw
+        transform.rotation.SetLookRotation(player);
+
+        if (!alreadyAttacked)
+        {
+            Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+            rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+            rb.AddForce(transform.up * 8f, ForceMode.Impulse);
+
+
+            alreadyAttacked = true;
+            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+        }
+    }
+
+    private void ResetAttack()
+    {
+        alreadyAttacked = false;
     }
 }
