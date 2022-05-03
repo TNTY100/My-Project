@@ -187,7 +187,7 @@ public class BoxBoiBehaviour : MonoBehaviour
 
         // problem with looking at the player
         // https://youtu.be/UjkSFoLxesw
-        transform.rotation.SetLookRotation(player);
+        transform.rotation.SetLookRotation(player.transform.position);
 
         if (!alreadyAttacked)
         {
