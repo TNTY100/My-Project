@@ -66,7 +66,7 @@
     <Compile Include="Assets\Scripts\ai\BehaviourTree\ActiveBehaviourTree.cs" />
     <Compile Include="Assets\Scripts\ai\BehaviourTree\Leaf.cs" />
     <Compile Include="Assets\Scripts\DoorEtDisquette\DisquetteScript.cs" />
-    <Compile Include="Assets\Scripts\ai\AgentManager.cs" />
+    <Compile Include="Assets\Scripts\ai\BehaviourTree\AgentManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIDiscController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
@@ -83,7 +83,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
-    <Compile Include="Assets\Scripts\ai\AIControl.cs" />
+    <Compile Include="Assets\Scripts\ai\BehaviourTree\AIControl.cs" />
     <Compile Include="Assets\Scripts\GameBackScript\TimeStepMonoBehaviour.cs" />
     <Compile Include="Assets\Scripts\DoorEtDisquette\DoorOpenner.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
@@ -96,7 +96,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
     <Compile Include="Assets\Scripts\PlayerRelated\GunSwitching.cs" />
-    <Compile Include="Assets\Scripts\ai\BoxBoiBehaviour.cs" />
+    <Compile Include="Assets\Scripts\ai\BehaviourTree\BoxBoiBehaviour.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
@@ -114,6 +114,9 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\Scripts\ai\BehaviourTree\Selector.cs" />
     <Compile Include="Assets\Scripts\GameBackScript\SingletonComponent.cs" />
+    <Compile Include="Assets\Scripts\ai\AIBehaviourStraf.cs" />
+    <Compile Include="Assets\Scripts\ai\AiBehaviorShoot.cs" />
+    <Compile Include="Assets\Scripts\ai\OnImpact.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

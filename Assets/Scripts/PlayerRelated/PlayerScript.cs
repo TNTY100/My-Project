@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
+    public float health = 100;
+
     public bool has_disc = false;
     private void Start()
     {

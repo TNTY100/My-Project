@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3307727472991268262}
   - component: {fileID: 3307727472991268263}
   - component: {fileID: 3307727472991268314}
+  - component: {fileID: 8859813481338134639}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -152,6 +153,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   has_disc: 0
+--- !u!208 &8859813481338134639
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3307727472991268261}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 1, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 0
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &3307727473022581974
 GameObject:
   m_ObjectHideFlags: 0
@@ -5206,7 +5223,6 @@ MonoBehaviour:
   muzzle_flash: {fileID: 3307727473022581960}
   impact_effect: {fileID: 7843038591995527579, guid: fc713d93d483d8340864e5c17bd40bb0, type: 3}
   animator: {fileID: 3307727473120224920}
-  clips: []
   ammo_counter: {fileID: 0}
 --- !u!95 &3307727473120224920
 Animator:
@@ -5575,7 +5591,6 @@ MonoBehaviour:
   muzzle_flash: {fileID: 3307727473505696517}
   impact_effect: {fileID: 7843038591995527579, guid: fc713d93d483d8340864e5c17bd40bb0, type: 3}
   animator: {fileID: 3307727473217378545}
-  clips: []
   ammo_counter: {fileID: 0}
 --- !u!95 &3307727473217378545
 Animator:

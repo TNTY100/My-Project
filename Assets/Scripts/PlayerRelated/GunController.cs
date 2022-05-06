@@ -109,7 +109,6 @@ public class GunController : MonoBehaviour
     void Shoot()
     {
 
-        // Play the animation (BUGED)
         muzzle_flash.Play();
 
         current_ammo--;
